@@ -73,7 +73,7 @@ Demo:
 #### Web Application
 1. Clone the repository:
     ```bash
-    git clone https://github.com/3marsaied/pulse-pediatric.git
+    git clone https://github.com/YoussefYoussefG/CareCubs-Clinic.git
     ```
 2. Navigate to the project directory:
     ```bash
@@ -102,15 +102,12 @@ Demo:
   
 - Install the APK on your Android device.
 
-## API Documentation
 
-For detailed API documentation, please refer to our API documentation:
-[API Documentation](https://pediatric-pulse.onrender.com)
 
 
 ## Contact
 
 If you have any questions or need further assistance, feel free to reach out:
 
-- Email: omarsaied2112@gmail.com && abdelhamid.ssen@gmail.com
-- Issues: [GitHub Issues](https://github.com/3marsaied/pediatric-pulse)
+- Email: yg.youssef.gamal16@gmail.com
+- Issues: [GitHub Issues](https://github.com/YoussefYoussefG/CareCubs-Clinic)
