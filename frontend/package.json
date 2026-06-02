@@ -29,7 +29,9 @@
     "react-virtuoso": "^4.7.10",
     "react-window": "^1.8.10",
     "simplex-noise": "^4.0.1",
-    "tailwind-merge": "^2.3.0"
+    "tailwind-merge": "^2.3.0",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",
