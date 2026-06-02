@@ -10,19 +10,29 @@ load_dotenv()
 SQLALCHEMY_DATABASE_URL = os.getenv("DB_URL")
 
 if not SQLALCHEMY_DATABASE_URL:
-    raise RuntimeError("DB_URL environment variable is not set. Please configure it in your .env file.")
-
-# Establish database connection with connection pooling
-try:
-    engine = create_engine(
-        SQLALCHEMY_DATABASE_URL,
-        pool_size=10,
-        max_overflow=20,
-        pool_pre_ping=True,  # Verify connections before use (important for Supabase)
-    )
-    print("✅ Database engine created successfully.")
-except SQLAlchemyError as e:
-    raise RuntimeError(f"Failed to create database engine: {e}")
+    print("⚠️ DB_URL not found in .env file. Falling back to local SQLite database for testing.")
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./carecubs_test.db"
+    
+    try:
+        engine = create_engine(
+            SQLALCHEMY_DATABASE_URL,
+            connect_args={"check_same_thread": False} # Required for SQLite in FastAPI
+        )
+        print("✅ Local SQLite database engine created successfully.")
+    except SQLAlchemyError as e:
+        raise RuntimeError(f"Failed to create SQLite database engine: {e}")
+else:
+    try:
+        # Establish Postgres database connection with connection pooling
+        engine = create_engine(
+            SQLALCHEMY_DATABASE_URL,
+            pool_size=10,
+            max_overflow=20,
+            pool_pre_ping=True,  # Verify connections before use (important for Supabase)
+        )
+        print("✅ Database engine created successfully.")
+    except SQLAlchemyError as e:
+        raise RuntimeError(f"Failed to create database engine: {e}")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
