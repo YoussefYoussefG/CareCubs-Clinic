@@ -59,3 +59,9 @@ Thumbs.db
 *.bak
 *.tmp
 coverage/
+
+# === Project-specific ===
+task.md
+frontend/db.json
+frontend/frontend/
+frontend/package-lock.json
