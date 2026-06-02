@@ -35,9 +35,11 @@ const login = () => {
     password: ""
   })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setLoading(true)
+    setError(null)
     e.preventDefault();
     const requestOptions = {
       method: "POST",
@@ -49,15 +51,9 @@ const login = () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_NAME}/login`, requestOptions);
       const data = await response.json();
-      // Mock server
-      // localStorage.setItem("accessToken", formData.username)
-      // localStorage.setItem("userId", "1")
-      // localStorage.setItem("role", "doctor")
-      console.log(data)
 
       if (response.status === 200 || response.status === 201) {
         setLoading(false)
-        // back end server
         localStorage.setItem("accessToken", data[0].accessToken)
         localStorage.setItem("userId", data[0].userId)
         localStorage.setItem("role", data[0].role)
@@ -77,11 +73,13 @@ const login = () => {
       }
       else {
         setLoading(false)
+        setError(data.detail || "Invalid username or password. Please try again.")
       }
     }
     catch (error) {
-      console.error('Error loggin in:', error)
+      console.error('Error logging in:', error)
       setLoading(false)
+      setError("Unable to connect to the server. Please check your connection and try again.")
     }
   }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,6 +98,11 @@ const login = () => {
           Login to go to your portal
         </p>
         <form className="my-8" onSubmit={handleSubmit}>
+          {error && (
+            <div className="mb-4 rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
           <LabelInputContainer className="mb-4">
             <Label htmlFor="username">User Name</Label>
             <Input id="username" name='username' value={formData.username} onChange={handleChange} required placeholder="" type="username" />

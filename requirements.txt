@@ -1,25 +1,30 @@
-fastapi
-uvicorn
-gunicorn
-requests
-passlib
-jose
-python-jose
-datetime
-typing
-sqlalchemy
-pydantic
-passlib
-psycopg2
-python-multipart
-bcrypt
-jwt
-PyJWT
-oauthlib
-requests_oauthlib
-asyncpg
-bcrypt
-apscheduler
-firebase-admin
-pyfcm
-pywebpush
+# Core framework
+fastapi>=0.100.0,<1.0.0
+uvicorn>=0.23.0,<1.0.0
+gunicorn>=21.2.0,<23.0.0
+
+# Database
+sqlalchemy>=2.0.0,<3.0.0
+psycopg2-binary>=2.9.0,<3.0.0
+asyncpg>=0.28.0,<1.0.0
+
+# Auth & Security
+python-jose[cryptography]>=3.3.0,<4.0.0
+passlib[bcrypt]>=1.7.4,<2.0.0
+bcrypt>=4.0.0,<5.0.0
+python-multipart>=0.0.6,<1.0.0
+
+# Validation
+pydantic>=2.0.0,<3.0.0
+
+# Environment
+python-dotenv>=1.0.0,<2.0.0
+
+# HTTP
+requests>=2.31.0,<3.0.0
+
+# Scheduler
+apscheduler>=3.10.0,<4.0.0
+
+# Firebase (push notifications)
+google-auth>=2.22.0,<3.0.0

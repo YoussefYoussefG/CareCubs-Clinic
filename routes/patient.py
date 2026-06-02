@@ -1,40 +1,36 @@
-from fastapi import HTTPException, status, Depends, APIRouter, Header
-from sqlalchemy.orm import session
-
-import sys
-
-
-
-import models
-import database
-import oauth2
-import utils
-import schemas
-
-router = APIRouter(
-    tags=["patient"]
-)
-
-
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-@router.post("/add/patient", status_code=status.HTTP_201_CREATED, description="This is a post request to add a new patient.", response_model=schemas.PatientResponse)
-async def CreateUser(user: schemas.addPatient, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
+import database
+import deps
+import models
+import oauth2
+import schemas
 
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(user.parentId, token)
-    if not token_data:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+router = APIRouter(tags=["patient"])
 
-    # Check if the parent user exists
+
+# ─── Create ─────────────────────────────────────────────────────────────────
+
+@router.post(
+    "/add/patient",
+    status_code=status.HTTP_201_CREATED,
+    description="Add a new patient (parent user).",
+    response_model=schemas.PatientResponse,
+)
+async def create_patient(
+    user: schemas.AddPatient,
+    current_user=Depends(deps.get_current_user),
+    db: Session = Depends(database.get_db),
+):
     parent_user = db.query(models.User).filter(models.User.userId == user.parentId).first()
-    if parent_user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {user.parentId} not found.")
+    if not parent_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with id {user.parentId} not found.",
+        )
 
-    # Create a new instance of the Patient model with the hashed password
     new_patient = models.Patient(
         firstName=user.firstName,
         lastName=user.lastName,
@@ -43,20 +39,14 @@ async def CreateUser(user: schemas.addPatient, Authorization: str = Header(None)
         parentPhoneNumber=parent_user.PhoneNumber,
         parentId=user.parentId,
         age=user.age,
-        gender=user.gender
+        gender=user.gender,
     )
-
-    # Add the new_patient instance to the session
     db.add(new_patient)
-    # Commit the session to persist the changes
     db.commit()
-    # Refresh the new_patient instance to ensure it has the latest data from the database
     db.refresh(new_patient)
 
-    # Create a new medical record for the patient
-    new_medical_record = models.MedicalRecord(
-        patientId = new_patient.id,
-    )
+    # Auto-create medical record for the patient
+    new_medical_record = models.MedicalRecord(patientId=new_patient.id)
     try:
         db.add(new_medical_record)
         db.commit()
@@ -65,27 +55,28 @@ async def CreateUser(user: schemas.addPatient, Authorization: str = Header(None)
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating medical record: {e}")
 
-    # Return the response with the newly created patient
     return new_patient
 
 
-@router.post("/add/patient/{adminId}", status_code=status.HTTP_201_CREATED, description="This is a post request to add a new patient.", response_model=schemas.PatientResponse)
-async def CreateUser(user: schemas.addPatient, adminId: int , Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(adminId, token)
-    if not token_data:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-    # Check if the parent user exists
+@router.post(
+    "/add/patient/{adminId}",
+    status_code=status.HTTP_201_CREATED,
+    description="Add a new patient (admin).",
+    response_model=schemas.PatientResponse,
+)
+async def create_patient_admin(
+    user: schemas.AddPatient,
+    adminId: int,
+    admin: models.User = Depends(deps.require_admin),
+    db: Session = Depends(database.get_db),
+):
     parent_user = db.query(models.User).filter(models.User.userId == user.parentId).first()
-    if parent_user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {user.parentId} not found.")
+    if not parent_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with id {user.parentId} not found.",
+        )
 
-    # Create a new instance of the Patient model with the hashed password
     new_patient = models.Patient(
         firstName=user.firstName,
         lastName=user.lastName,
@@ -94,20 +85,13 @@ async def CreateUser(user: schemas.addPatient, adminId: int , Authorization: str
         parentPhoneNumber=parent_user.PhoneNumber,
         parentId=user.parentId,
         age=user.age,
-        gender=user.gender
+        gender=user.gender,
     )
-
-    # Add the new_patient instance to the session
     db.add(new_patient)
-    # Commit the session to persist the changes
     db.commit()
-    # Refresh the new_patient instance to ensure it has the latest data from the database
     db.refresh(new_patient)
 
-    # Create a new medical record for the patient
-    new_medical_record = models.MedicalRecord(
-        patientId = new_patient.id,
-    )
+    new_medical_record = models.MedicalRecord(patientId=new_patient.id)
     try:
         db.add(new_medical_record)
         db.commit()
@@ -116,231 +100,210 @@ async def CreateUser(user: schemas.addPatient, adminId: int , Authorization: str
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating medical record: {e}")
 
-    # Return the response with the newly created patient
     return new_patient
 
 
+# ─── Read ────────────────────────────────────────────────────────────────────
 
-@router.get("/get/patients/{parentId}", description="This route returns patient data via parentId and takes the token in the header", response_model=list[schemas.PatientResponse])
-async def get_patient(parentId: int,  Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(parentId, token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    if token_data == False:
-        raise HTTPException( status_code=401, detail= "unauthorized")
+@router.get(
+    "/get/patients/{parentId}",
+    description="Get all patients for a parent.",
+    response_model=list[schemas.PatientResponse],
+)
+async def get_patients_by_parent(
+    parentId: int,
+    current_user=Depends(deps.get_current_user),
+    db: Session = Depends(database.get_db),
+):
     patients = db.query(models.Patient).filter(models.Patient.parentId == parentId).all()
-
     return patients
 
 
-
-@router.get("/get/patient/{patientId}/{parentId}", description="This route returns patient data via patientId and takes the token for parent in the header", response_model=schemas.PatientResponse)
-async def get_patient(patientId: int, parentId:int,  Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(parentId, token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    if token_data == False:
-        raise HTTPException( status_code=401, detail= "unauthorized")
+@router.get(
+    "/get/patient/{patientId}/{parentId}",
+    description="Get a specific patient by ID (parent auth).",
+    response_model=schemas.PatientResponse,
+)
+async def get_patient_by_id(
+    patientId: int,
+    parentId: int,
+    current_user=Depends(deps.get_current_user),
+    db: Session = Depends(database.get_db),
+):
     patient = db.query(models.Patient).filter(models.Patient.id == patientId).first()
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
     return patient
 
 
-
-
-
-
-@router.get('/patientList/{doctorId}', description="This route returns all the patients of a doctor", response_model = list[schemas.patientList])
-async def listPatients(doctorId: int, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(doctorId, token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    patientsId = db.query(models.MRAccess).filter(models.MRAccess.doctorId == doctorId).all()
+@router.get(
+    "/patientList/{doctorId}",
+    description="Get all patients for a specific doctor.",
+    response_model=list[schemas.PatientListItem],
+)
+async def list_patients_for_doctor(
+    doctorId: int,
+    doctor: models.Doctor = Depends(deps.require_doctor),
+    db: Session = Depends(database.get_db),
+):
+    access_records = db.query(models.MRAccess).filter(models.MRAccess.doctorId == doctorId).all()
     patients = []
-    for id in patientsId:
-        patientS = db.query(models.Patient).filter(models.Patient.id == id.patientId).all()
-        for patient in patientS:
+
+    for record in access_records:
+        patient_list = db.query(models.Patient).filter(models.Patient.id == record.patientId).all()
+        for patient in patient_list:
             parent = db.query(models.User).filter(models.User.userId == patient.parentId).first()
-            pic = parent.profilePicture if parent.profilePicture is not None else "None"
-            new_patient = {
+            pic = parent.profilePicture if parent and parent.profilePicture else "None"
+            patients.append({
                 "parentPic": pic,
                 "patientFirstName": patient.firstName,
                 "patientLastName": patient.lastName,
-                "parentFirstName": parent.firstName,
-                "parentLastName": parent.lastName,
-                "patientId": patient.id,   
-            }
-            patients.append(new_patient)
+                "parentFirstName": parent.firstName if parent else "",
+                "parentLastName": parent.lastName if parent else "",
+                "patientId": patient.id,
+            })
+
     return patients
 
 
-
-@router.get('/patient/{patientId}/{doctorId}', description="This route returns the patient's info", response_model = schemas.returnPatient)
-async def get_patient_info(patientId: int, doctorId: int, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token = oauth2.verify_access_token(doctorId, token)
-    if not token:
-        raise HTTPException( status_code=401, detail= "unauthorized")
+@router.get(
+    "/patient/{patientId}/{doctorId}",
+    description="Get patient info (doctor view).",
+    response_model=schemas.ReturnPatient,
+)
+async def get_patient_info_doctor(
+    patientId: int,
+    doctorId: int,
+    doctor: models.Doctor = Depends(deps.require_doctor),
+    db: Session = Depends(database.get_db),
+):
     patient = db.query(models.Patient).filter(models.Patient.id == patientId).first()
-    parent = db.query(models.User).filter(models.User.userId == patient.parentId).first()
-    pic = parent.profilePicture if parent.profilePicture is not None else "None"
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
 
-    newPatient = {
+    parent = db.query(models.User).filter(models.User.userId == patient.parentId).first()
+    pic = parent.profilePicture if parent and parent.profilePicture else "None"
+
+    return {
         "firstName": patient.firstName,
         "lastName": patient.lastName,
-        "parentFirstName": parent.firstName,
-        "parentLastName": parent.lastName,
+        "parentFirstName": parent.firstName if parent else "",
+        "parentLastName": parent.lastName if parent else "",
         "parentPic": pic,
         "age": patient.age,
-        "id": patientId
-        
+        "id": patientId,
     }
-    return newPatient
 
 
-@router.get('/get/all/patients/{adminId}', description="This route returns all the patients", response_model = list[schemas.PatientResponse])
-async def getAllPatients(adminId: int, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
+@router.get(
+    "/get/all/patients/{adminId}",
+    description="Get all patients (admin only).",
+    response_model=list[schemas.PatientResponse],
+)
+async def get_all_patients(
+    adminId: int,
+    admin: models.User = Depends(deps.require_admin),
+    db: Session = Depends(database.get_db),
+):
+    return db.query(models.Patient).all()
 
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(adminId, token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    admin = db.query(models.User).filter(models.User.userId == adminId).first()
-    if admin.role != "admin":
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    
+
+@router.get(
+    "/get/all/patientsObj/{adminId}",
+    description="Get all patients with parent info (admin only).",
+)
+async def get_all_patients_obj(
+    adminId: int,
+    admin: models.User = Depends(deps.require_admin),
+    db: Session = Depends(database.get_db),
+):
     patients = db.query(models.Patient).all()
-    
-    return patients
-
-
-@router.get('/get/all/patientsObj/{adminId}', description="This route returns all the patients")
-async def getAllPatients(adminId: int, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(adminId, token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    admin = db.query(models.User).filter(models.User.userId == adminId).first()
-    if admin.role != "admin":
-        raise HTTPException( status_code=401, detail= "unauthorized")
-
-    patients = db.query(models.Patient).all()
-    patientsData = []
+    result = []
     for patient in patients:
         parent = db.query(models.User).filter(models.User.userId == patient.parentId).first()
-        pic = parent.profilePicture if parent.profilePicture is not None else "https://i.imgur.com/9g7aq8u.png"
-        new_patient = {
+        pic = parent.profilePicture if parent and parent.profilePicture else "https://i.imgur.com/9g7aq8u.png"
+        result.append({
             "parentPic": pic,
             "patientFirstName": patient.firstName,
             "patientLastName": patient.lastName,
-            "parentFirstName": parent.firstName,
-            "parentLastName": parent.lastName,
-            "patientId": patient.id,   
-        }
-        patientsData.append(new_patient)
-    return patientsData
+            "parentFirstName": parent.firstName if parent else "",
+            "parentLastName": parent.lastName if parent else "",
+            "patientId": patient.id,
+        })
+    return result
 
-@router.get('/get/Number/of/patients/{adminId}', description="This route returns the doctor's reviews")
-async def getPatientsTotalPrice(adminId: int, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
 
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(adminId, token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    admin = db.query(models.User).filter(models.User.userId == adminId).first()
-    if admin.role != 'admin':
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    users = db.query(models.Patient).all()
-    totalPrice = len(users)
-    return {"totalNumberOfPatients":totalPrice}
+# ─── Analytics ───────────────────────────────────────────────────────────────
 
-@router.put("/update/patient/{patientId}/{parentId}", description="This route updates the patient's info", response_model=schemas.Patient)
-async def update_doctor_pic(patient: schemas.updatePatient, patientId: int, parentId: int, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
+@router.get(
+    "/get/Number/of/patients/{adminId}",
+    description="Get total number of patients (admin only).",
+)
+async def get_number_of_patients(
+    adminId: int,
+    admin: models.User = Depends(deps.require_admin),
+    db: Session = Depends(database.get_db),
+):
+    count = db.query(models.Patient).count()
+    return {"totalNumberOfPatients": count}
 
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(parentId ,token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
 
-    user_query = db.query(models.Patient).filter(models.Patient.id == patientId)
-    user_query.update({ 
+# ─── Update ──────────────────────────────────────────────────────────────────
+
+@router.put(
+    "/update/patient/{patientId}/{parentId}",
+    description="Update patient info.",
+    response_model=schemas.Patient,
+)
+async def update_patient(
+    patient: schemas.UpdatePatient,
+    patientId: int,
+    parentId: int,
+    current_user=Depends(deps.get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    patient_query = db.query(models.Patient).filter(models.Patient.id == patientId)
+    if not patient_query.first():
+        raise HTTPException(status_code=404, detail="Patient not found")
+
+    patient_query.update({
         "age": patient.age,
-        "firstName": patient.firstName, 
+        "firstName": patient.firstName,
         "lastName": patient.lastName,
         "gender": patient.gender,
-        })
-    
+    })
     db.commit()
 
-    patient= db.query(models.Patient).filter(models.Patient.id == patientId).first()
-    
-    return patient
+    return db.query(models.Patient).filter(models.Patient.id == patientId).first()
 
 
+# ─── Delete ──────────────────────────────────────────────────────────────────
 
-@router.delete("/delete/patient/{patientId}/{userId}", description="This route deletes a patient via patientId and takes the token for parent in the header")
-async def delete_patient(patientId: int, userId: int, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(userId, token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    if token_data == False:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    
+@router.delete(
+    "/delete/patient/{patientId}/{userId}",
+    description="Delete a patient and all related records.",
+)
+async def delete_patient(
+    patientId: int,
+    userId: int,
+    current_user=Depends(deps.get_current_user),
+    db: Session = Depends(database.get_db),
+):
     patient = db.query(models.Patient).filter(models.Patient.id == patientId).first()
-    
     if not patient:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found.")
 
-    
-    medicalRecord = db.query(models.MedicalRecord).filter(models.MedicalRecord.patientId == patientId).first()
+    # Delete related records in order
+    db.query(models.MRAccess).filter(models.MRAccess.patientId == patientId).delete()
+    db.query(models.Appointment).filter(models.Appointment.patientId == patientId).delete()
 
-    mras = db.query(models.MRAccess).filter(models.MRAccess.patientId == patientId).all()
-    for mra in mras:
-        db.delete(mra)
-        db.commit()
-    appointments = db.query(models.Appointment).filter(models.Appointment.patientId == patientId).all()
-    for appointment in appointments:
-        db.delete(appointment)
-        db.commit()
-    
-    db.delete(medicalRecord)
-    db.commit()
+    medical_record = db.query(models.MedicalRecord).filter(
+        models.MedicalRecord.patientId == patientId
+    ).first()
+    if medical_record:
+        db.delete(medical_record)
+
     db.delete(patient)
     db.commit()
+
     return {"message": "Patient deleted successfully"}

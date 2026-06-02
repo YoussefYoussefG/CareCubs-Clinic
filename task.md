@@ -19,30 +19,30 @@
   - [x] Fix `models.py` — typos, naming, indexes, relationships
   - [x] Fix `schemas.py` — duplicates, typos, Pydantic v2 style
   - [x] Refactor `routes/auth.py`
-  - [ ] Refactor `routes/doctor.py`
-  - [ ] Refactor `routes/appointment.py`
-  - [ ] Refactor `routes/patient.py`
-  - [ ] Refactor `routes/user.py`
+  - [x] Refactor `routes/doctor.py`
+  - [x] Refactor `routes/appointment.py`
+  - [x] Refactor `routes/patient.py`
+  - [x] Refactor `routes/user.py`
   - [x] Refactor `routes/MedicalRecord.py` → `routes/medical_record.py`
-  - [ ] Refactor `routes/reviews.py`
-  - [ ] Refactor `routes/notification.py`
-- [ ] 2.3 Fix `scheduler.py` — remove keep_awake, env-based Firebase creds
-- [ ] 2.4 Update `main.py` to use new module names
-- [ ] 2.5 Update `requirements.txt` — clean and pin versions
+  - [x] Refactor `routes/reviews.py`
+  - [x] Refactor `routes/notification.py`
+- [x] 2.3 Fix `scheduler.py` — remove keep_awake, env-based Firebase creds
+- [x] 2.4 Update `main.py` to use new module names
+- [x] 2.5 Update `requirements.txt` — clean and pin versions
 
 ## Phase 3: Frontend Improvements
-- [ ] Create API service layer (`services/api.ts`)
-- [ ] Create auth context for token management
-- [ ] Remove unused deps (`express`, `jsonwebtoken`, `react-router-dom`)
-- [ ] Add error handling and loading states
-- [ ] Add SEO meta tags
-- [ ] Add error boundaries
+- [x] Create API service layer (`services/api.ts`)
+- [x] Create auth context for token management
+- [x] Remove unused deps (`express`, `jsonwebtoken`, `react-router-dom`)
+- [x] Add error handling and loading states
+- [x] Add SEO meta tags
+- [x] Add error boundaries
 
 ## Phase 4: Supabase Migration Guide
-- [ ] Write Supabase setup guide with connection string format
-- [ ] Add Alembic migration support (optional)
+- [x] Write Supabase setup guide with connection string format
+- [x] Add Alembic migration support (optional)
 
 ## Phase 5: Deployment Guide
-- [ ] Write Vercel deployment guide for frontend
-- [ ] Write backend deployment guide (Render/Railway)
-- [ ] Document environment variables needed
+- [x] Write Vercel deployment guide for frontend
+- [x] Write backend deployment guide (Render/Railway)
+- [x] Document environment variables needed

@@ -38,8 +38,11 @@ This guide covers deploying the backend to Render/Railway and the frontend to Ve
 **Backend:**
 - `DB_URL`: PostgreSQL connection string (Supabase).
 - `SECRET_KEY`: Random string for JWT tokens.
-- `ACCESS_TOKEN_EXPIRE_MINUTES`: Token expiry in minutes.
-- `FIREBASE_CREDENTIALS` (if applicable): Firebase JSON configuration stored as a string or environment variables.
+- `ACCESS_TOKEN_EXPIRE_MINUTES`: Token expiry in minutes (default: `60`).
+- `FIREBASE_CREDENTIALS_JSON`: Full Firebase service account JSON as a string (recommended for deployment).
+- `FIREBASE_KEY_PATH`: Path to `firebase_key.json` file (fallback for local development, default: `firebase_key.json`).
+- `FIREBASE_PROJECT_ID`: Firebase project ID for FCM (default: `pulse-pediatric`).
 
 **Frontend:**
 - `NEXT_PUBLIC_API_URL`: Backend API endpoint URL.
+- `NEXT_PUBLIC_SERVER_NAME`: Backend server URL (used by some components).

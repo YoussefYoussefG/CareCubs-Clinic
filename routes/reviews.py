@@ -1,148 +1,144 @@
-from fastapi import HTTPException, status, Depends, APIRouter, Header
-from sqlalchemy.orm import session
 from typing import List
 
-import sys
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 
-
-
-import models
 import database
-import oauth2
-import utils
+import deps
+import models
 import schemas
 
-router = APIRouter(
-    tags=["reviews"]
+router = APIRouter(tags=["reviews"])
+
+
+# ─── Create ─────────────────────────────────────────────────────────────────
+
+@router.post(
+    "/add/review",
+    status_code=status.HTTP_201_CREATED,
+    description="Add a new review for a doctor.",
 )
-
-@router.post("/add/review", status_code=status.HTTP_201_CREATED, description="This is a post request add a new review")
-async def add_review(review: schemas.reviews, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(review.parentId, token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    if token_data == False:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    
-    newReview = models.reviews(parentId=review.parentId, doctorId=review.doctorId, review=review.review, rating = review.rating)
-    db.add(newReview)
+async def add_review(
+    review: schemas.ReviewCreate,
+    current_user=Depends(deps.get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    new_review = models.Review(
+        parentId=review.parentId,
+        doctorId=review.doctorId,
+        review=review.review,
+        rating=review.rating,
+    )
+    db.add(new_review)
     db.commit()
-    db.refresh(newReview)
-    return {'message': "your review has been added successfully"}
+    db.refresh(new_review)
+    return {"message": "Your review has been added successfully"}
 
 
-@router.get("/get/review/{doctorId}", status_code=status.HTTP_200_OK, description="This is a get request to get all reviews of a patient", response_model=List[schemas.reviewsResponse])
-async def get_review(doctorId: int, db: session = Depends(database.get_db)):
-    reviews = db.query(models.reviews).filter(models.reviews.doctorId ==doctorId).all()
-    reviews_response = []
+# ─── Read ────────────────────────────────────────────────────────────────────
+
+@router.get(
+    "/get/review/{doctorId}",
+    status_code=status.HTTP_200_OK,
+    description="Get all reviews for a doctor (public).",
+    response_model=List[schemas.ReviewResponse],
+)
+async def get_reviews(doctorId: int, db: Session = Depends(database.get_db)):
+    reviews = db.query(models.Review).filter(models.Review.doctorId == doctorId).all()
+    result = []
     for review in reviews:
         doctor = db.query(models.Doctor).filter(models.Doctor.id == review.doctorId).first()
         reviewer = db.query(models.User).filter(models.User.userId == review.parentId).first()
-        doctorName = "Dr. " + doctor.firstName + " " + doctor.lastName
-        reviewerName = reviewer.firstName + " " + reviewer.lastName
-        reviews_response.append(schemas.reviewsResponse(
-            reviewerName = reviewerName,
-            docotrName = doctorName,
-            review = review.review,
-            rating = review.rating
+        doctor_name = f"Dr. {doctor.firstName} {doctor.lastName}" if doctor else "Unknown"
+        reviewer_name = f"{reviewer.firstName} {reviewer.lastName}" if reviewer else "Unknown"
+        result.append(schemas.ReviewResponse(
+            reviewerName=reviewer_name,
+            doctorName=doctor_name,
+            review=review.review,
+            rating=review.rating,
         ))
-    return reviews_response
-
-@router.get("/get/reviews/barchart/{doctorId}", status_code=status.HTTP_200_OK, description="This is a get request to get all reviews of a patient", response_model=List[schemas.barChart])
-async def get_reviews_barchart(doctorId: int, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(doctorId, token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    reviewsData = []
-    i = 5
-    while i > 0:
-        reviews = db.query(models.reviews).filter(models.reviews.doctorId == doctorId, models.reviews.rating == i).all()
-        reviewData = {
-            "number": len(reviews),
-            "stars": i
-        }
-        reviewsData.append(reviewData)
-        i -= 1
-        if i > 5:
-            break
-    return reviewsData
+    return result
 
 
-@router.get("/get/reviews/barchart/{doctorId}/{adminId}", status_code=status.HTTP_200_OK, description="This is a get request to get all reviews of a patient", response_model=List[schemas.barChart])
-async def get_reviews_barchart(doctorId: int, adminId:int, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(adminId, token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    reviewsData = []
-    i = 5
-    while i > 0:
-        reviews = db.query(models.reviews).filter(models.reviews.doctorId == doctorId, models.reviews.rating == i).all()
-        reviewData = {
-            "number": len(reviews),
-            "stars": i
-        }
-        reviewsData.append(reviewData)
-        i -= 1
-        if i > 5:
-            break
-    return reviewsData
+@router.get(
+    "/get/reviews/barchart/{doctorId}",
+    status_code=status.HTTP_200_OK,
+    description="Get review bar chart data for a doctor.",
+    response_model=List[schemas.BarChart],
+)
+async def get_reviews_barchart(
+    doctorId: int,
+    doctor: models.Doctor = Depends(deps.require_doctor),
+    db: Session = Depends(database.get_db),
+):
+    result = []
+    for stars in range(5, 0, -1):
+        count = db.query(models.Review).filter(
+            models.Review.doctorId == doctorId, models.Review.rating == stars
+        ).count()
+        result.append({"number": count, "stars": stars})
+    return result
 
 
-
-@router.get('/get/doctor/avg/rating/{doctorId}', status_code=status.HTTP_200_OK, description="This route returns the average rating of a doctor", response_model = schemas.avgRating)
-async def getAvgRating(doctorId: int, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(doctorId, token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    reviews = db.query(models.reviews).filter(models.reviews.doctorId == doctorId).all()
-    totalRating = 0.0
-    for review in reviews:
-        totalRating += review.rating
-    avgRating = round(float(totalRating/len(reviews)),2)
-    newData = {
-        "avgRating": avgRating,
-        "count": len(reviews),
-    }
-    return newData
+@router.get(
+    "/get/reviews/barchart/{doctorId}/{adminId}",
+    status_code=status.HTTP_200_OK,
+    description="Get review bar chart data for a doctor (admin view).",
+    response_model=List[schemas.BarChart],
+)
+async def get_reviews_barchart_admin(
+    doctorId: int,
+    adminId: int,
+    admin: models.User = Depends(deps.require_admin),
+    db: Session = Depends(database.get_db),
+):
+    result = []
+    for stars in range(5, 0, -1):
+        count = db.query(models.Review).filter(
+            models.Review.doctorId == doctorId, models.Review.rating == stars
+        ).count()
+        result.append({"number": count, "stars": stars})
+    return result
 
 
-@router.get('/get/doctor/avg/rating/{doctorId}/{adminId}', status_code=status.HTTP_200_OK, description="This route returns the average rating of a doctor", response_model = schemas.avgRating)
-async def getAvgRating(doctorId: int,adminId:int, Authorization: str = Header(None), db: session = Depends(database.get_db)):
-    if not Authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
+# ─── Analytics ───────────────────────────────────────────────────────────────
 
-    # Extract token from "Bearer <token>"
-    token = Authorization.split(" ")[1]
-    token_data = oauth2.verify_access_token(adminId, token)
-    if not token_data:
-        raise HTTPException( status_code=401, detail= "unauthorized")
-    reviews = db.query(models.reviews).filter(models.reviews.doctorId == doctorId).all()
-    totalRating = 0.0
-    for review in reviews:
-        totalRating += review.rating
-    avgRating = round(float(totalRating/len(reviews)),2)
-    newData = {
-        "avgRating": avgRating,
-        "count": len(reviews),
-    }
-    return newData
+@router.get(
+    "/get/doctor/avg/rating/{doctorId}",
+    status_code=status.HTTP_200_OK,
+    description="Get average rating for a doctor.",
+    response_model=schemas.AvgRating,
+)
+async def get_avg_rating(
+    doctorId: int,
+    doctor: models.Doctor = Depends(deps.require_doctor),
+    db: Session = Depends(database.get_db),
+):
+    reviews = db.query(models.Review).filter(models.Review.doctorId == doctorId).all()
+    if not reviews:
+        return {"avgRating": 0.0, "count": 0}
+
+    total = sum(r.rating for r in reviews)
+    avg = round(float(total / len(reviews)), 2)
+    return {"avgRating": avg, "count": len(reviews)}
+
+
+@router.get(
+    "/get/doctor/avg/rating/{doctorId}/{adminId}",
+    status_code=status.HTTP_200_OK,
+    description="Get average rating for a doctor (admin view).",
+    response_model=schemas.AvgRating,
+)
+async def get_avg_rating_admin(
+    doctorId: int,
+    adminId: int,
+    admin: models.User = Depends(deps.require_admin),
+    db: Session = Depends(database.get_db),
+):
+    reviews = db.query(models.Review).filter(models.Review.doctorId == doctorId).all()
+    if not reviews:
+        return {"avgRating": 0.0, "count": 0}
+
+    total = sum(r.rating for r in reviews)
+    avg = round(float(total / len(reviews)), 2)
+    return {"avgRating": avg, "count": len(reviews)}

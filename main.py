@@ -1,16 +1,17 @@
 import os
+
 from fastapi import FastAPI
-import uvicorn
-from DataBase import engine
-from models import base
-from routes import auth, user, doctor, patient, appointment, medical_record, reviews, notification
-from starlette.responses import RedirectResponse
-from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
+from starlette.responses import RedirectResponse
+import uvicorn
+
+from database import engine, Base
+from routes import auth, user, doctor, patient, appointment, medical_record, reviews, notification
 import scheduler
 
 # Create database tables
-base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 # Initialize FastAPI app with customized Swagger UI parameters
 app = FastAPI(
@@ -46,6 +47,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Custom OpenAPI schema
 def custom_openapi():
     if app.openapi_schema:
@@ -63,13 +65,14 @@ def custom_openapi():
     return app.openapi_schema
 
 
-
 app.openapi = custom_openapi
+
 
 # Redirect root to Swagger UI
 @app.get("/", include_in_schema=False)
 async def root():
     return RedirectResponse(url="/docs")
+
 
 # Start the scheduler
 scheduler.start_scheduler()
@@ -78,4 +81,3 @@ scheduler.start_scheduler()
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
-
