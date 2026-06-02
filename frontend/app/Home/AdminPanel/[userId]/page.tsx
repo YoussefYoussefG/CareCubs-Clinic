@@ -376,7 +376,7 @@ const adminPanel = () => {
     fetchAppointmentList()
     fetchDoctorListStat()
   }, []);
-  // Assem
+  
   const SkeletonUser = React.memo(() => (
     <>
       {openModalUserAdd && <AddUser openModal={openModalUserAdd} setOpenModal={setOpenModalUserAdd} />}

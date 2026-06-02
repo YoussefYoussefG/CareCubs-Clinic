@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Date, Index, text
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Date, Index, func
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -13,7 +13,7 @@ class User(Base):
     userName = Column(String, nullable=False, unique=True, index=True)
     password = Column(String, nullable=False)
     googleId = Column(String)
-    createdAt = Column(DateTime, nullable=False, server_default=text("now()"))
+    createdAt = Column(DateTime, nullable=False, server_default=func.now())
     PhoneNumber = Column(String)
     age = Column(Integer)
     profilePicture = Column(String)
@@ -32,7 +32,7 @@ class Doctor(Base):
     email = Column(String, nullable=False, index=True)
     userName = Column(String, index=True)
     password = Column(String, nullable=False)
-    createdAt = Column(DateTime, nullable=False, server_default=text("now()"))
+    createdAt = Column(DateTime, nullable=False, server_default=func.now())
     rating = Column(Integer)
     numberOfRating = Column(Integer)
     price = Column(Integer, nullable=False)
@@ -84,7 +84,7 @@ class MedicalRecord(Base):
     patientId = Column(Integer, ForeignKey("patient.id"), nullable=False, index=True)
     notes = Column(String, default="None")
     treatment = Column(String, default="None")
-    createdAt = Column(DateTime, nullable=False, server_default=text("now()"))
+    createdAt = Column(DateTime, nullable=False, server_default=func.now())
     healthCondition = Column(String, default="None")
     vaccine = Column(String, default="None")
     allergies = Column(String, default="None")
