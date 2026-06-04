@@ -66,6 +66,7 @@ const signup = () => {
       }
       else {
         setLoading(false)
+        alert(data.detail || "Error signing up. Please check your details.")
       }
     }
     catch (error) {
