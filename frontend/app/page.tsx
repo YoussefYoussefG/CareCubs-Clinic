@@ -6,6 +6,7 @@ import Image from "next/image";
 import { CircularProgress } from '@mui/material';
 import { useEffect, useState } from "react";
 import NavbarLanding from "@/components/navbarLanding";
+import FooterLanding from "@/components/FooterLanding";
 
 interface Doctor {
   title: string;
@@ -85,7 +86,9 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </main> : <div className="w-screen h-screen flex justify-center items-center"><CircularProgress color="warning" size={'18rem'} /></div>}
+      </main>
+      <FooterLanding />
+      </> : <div className="w-screen h-screen flex justify-center items-center"><CircularProgress color="warning" size={'18rem'} /></div>}
     </>
   );
 }

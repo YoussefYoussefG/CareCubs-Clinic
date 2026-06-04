@@ -1,31 +1,66 @@
 import Link from "next/link";
 import Image from "next/image";
-import styles from "@/styles/navbar.module.css";
-
+import { FaPhoneAlt, FaEnvelope, FaClock } from "react-icons/fa";
 
 const NavbarLanding = () => {
     return (
-        <nav className="bg-black w-[100%] h-24 grid grid-cols-2 items-center px-6 md:px-12 lg:px-24 sticky top-0 z-50">
-            <div className="">
-                <Link className="lg:w-72 lg:h-24 md:w-48 md:h-16 w-48 h-16 flex" href="/">
-                    <Image
-                        className="lg:w-72 lg:h-24 md:w-48 md:h-16 w-48 h-16 md:p-1 lg:p-2"
-                        src="/logoSmall.png"
-                        alt="logo"
-                        width={1080}
-                        height={1}
-                    />
-                </Link>
+        <header className="w-full flex flex-col z-50 sticky top-0 shadow-md">
+            {/* Top Bar - Contact Info */}
+            <div className="bg-slate-900 text-gray-300 text-xs sm:text-sm py-2 px-6 md:px-12 lg:px-24 hidden md:flex justify-between items-center">
+                <div className="flex gap-6">
+                    <div className="flex items-center gap-2 hover:text-orange-400 transition-colors cursor-pointer">
+                        <FaPhoneAlt className="text-orange-500" />
+                        <span>+1 (555) 123-4567</span>
+                    </div>
+                    <div className="flex items-center gap-2 hover:text-orange-400 transition-colors cursor-pointer">
+                        <FaEnvelope className="text-orange-500" />
+                        <span>hello@carecubs.com</span>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <FaClock className="text-orange-500" />
+                    <span>Mon - Fri: 8:00 AM - 6:00 PM</span>
+                </div>
             </div>
-            <div className="flex justify-end gap-2 h-full">
-                <Link href="/Login">
-                    <button className={styles.btn}>Existing User</button>
-                </Link>
-                <Link href="/Signup">
-                    <button className={styles.btn}>New User</button>
-                </Link>
-            </div>
-        </nav>
+
+            {/* Main Nav - Links & CTA */}
+            <nav className="bg-white w-full h-20 sm:h-24 flex justify-between items-center px-6 md:px-12 lg:px-24">
+                {/* Logo */}
+                <div className="flex items-center">
+                    <Link href="/">
+                        <Image
+                            className="w-40 sm:w-56 md:w-64 object-contain"
+                            src="/logoBig.png"
+                            alt="Care Cubs Logo"
+                            width={1080}
+                            height={300}
+                        />
+                    </Link>
+                </div>
+
+                {/* Nav Links */}
+                <div className="hidden lg:flex items-center gap-8 text-slate-700 font-medium">
+                    <Link href="/" className="hover:text-orange-500 transition-colors">Home</Link>
+                    <Link href="/#about" className="hover:text-orange-500 transition-colors">About Us</Link>
+                    <Link href="/#services" className="hover:text-orange-500 transition-colors">Services</Link>
+                    <Link href="/#doctors" className="hover:text-orange-500 transition-colors">Doctors</Link>
+                    <Link href="/ContactUs" className="hover:text-orange-500 transition-colors">Contact</Link>
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="flex items-center gap-3">
+                    <Link href="/Login" className="hidden sm:block text-slate-700 font-medium hover:text-orange-500 transition-colors mr-2">
+                        Login
+                    </Link>
+                    <Link href="/Signup">
+                        <button className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-md shadow-md hover:shadow-lg transition-all duration-200 ease-in-out">
+                            Book Appointment
+                        </button>
+                    </Link>
+                </div>
+            </nav>
+        </header>
     );
 };
+
 export default NavbarLanding;
