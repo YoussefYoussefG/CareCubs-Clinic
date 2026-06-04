@@ -71,7 +71,7 @@ export default function Home() {
                 </div>
                 <div>
                   <Image
-                    className="w-auto h-80 object-contain"
+                    className="w-auto h-80 object-contain mix-blend-multiply"
                     src="/logoSmall.png"
                     alt="logo"
                     width={1080}
