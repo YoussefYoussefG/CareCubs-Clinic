@@ -18,9 +18,13 @@ interface Doctor {
 
 export default function Home() {
   const [doctors, setDoctors] = useState([] as Doctor[]);
-  function padArray(docs: Array<Doctor>, doc: Doctor) {
+  function padArray(docs: Array<Doctor>) {
+    if (docs.length === 0) return;
+    const originalDocs = [...docs];
+    let i = 0;
     while (docs.length < 15) {
-      docs.push(doc);
+      docs.push(originalDocs[i % originalDocs.length]);
+      i++;
     }
   }
   const headers = {
@@ -35,7 +39,7 @@ export default function Home() {
       console.log("Error: Request sent no data")
     }
     const data = await response.json();
-    padArray(data, data[0]);
+    padArray(data);
     setDoctors(data);
   }
 
