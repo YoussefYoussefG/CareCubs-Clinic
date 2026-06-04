@@ -26,11 +26,11 @@ const NavbarLanding = () => {
             {/* Main Nav - Links & CTA */}
             <nav className="bg-white w-full h-20 sm:h-24 flex justify-between items-center px-6 md:px-12 lg:px-24">
                 {/* Logo */}
-                <div className="flex items-center">
-                    <Link href="/">
+                <div className="flex items-center h-full py-2">
+                    <Link href="/" className="h-full flex items-center">
                         <Image
-                            className="w-40 sm:w-56 md:w-64 object-contain"
-                            src="/logoBig.png"
+                            className="h-12 sm:h-16 w-auto object-contain mix-blend-multiply"
+                            src="/logoSmall.png"
                             alt="Care Cubs Logo"
                             width={1080}
                             height={300}

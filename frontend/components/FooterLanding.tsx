@@ -11,7 +11,7 @@ const FooterLanding = () => {
                     <Link href="/">
                         <Image
                             className="w-48 object-contain filter brightness-0 invert"
-                            src="/logoBig.png"
+                            src="/logoSmall.png"
                             alt="Care Cubs Logo"
                             width={1080}
                             height={300}

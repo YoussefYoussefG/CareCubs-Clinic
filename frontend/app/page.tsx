@@ -7,6 +7,7 @@ import { CircularProgress } from '@mui/material';
 import { useEffect, useState } from "react";
 import NavbarLanding from "@/components/navbarLanding";
 import FooterLanding from "@/components/FooterLanding";
+import AboutUs from "@/components/AboutUs";
 
 interface Doctor {
   title: string;
@@ -55,6 +56,7 @@ export default function Home() {
           <main className="w-screen h-lvh">
             <div className="mx-auto h-screen">
               <HeroParallax products={doctors} />
+              <AboutUs />
               <div className="h-[40rem] relative w-screen bg-gray-100 flex flex-col justify-center items-center overflow-hidden">
                 <div className="w-screen absolute inset-0 h-screen">
                   <SparklesCore
@@ -69,11 +71,11 @@ export default function Home() {
                 </div>
                 <div>
                   <Image
-                    className="w-auto h-80"
-                    src="/logoBig.png"
+                    className="w-auto h-80 object-contain"
+                    src="/logoSmall.png"
                     alt="logo"
                     width={1080}
-                    height={1}
+                    height={300}
                   />
                 </div>
                 <div className="flex flex-col sm:flex-row items-center gap-4 mt-6">
