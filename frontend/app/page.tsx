@@ -50,45 +50,52 @@ export default function Home() {
   return (
     <>
       <NavbarLanding />
-      {doctors[0] ? <main className="w-screen h-lvh">
-        <div className="mx-auto h-screen">
-          <HeroParallax products={doctors} />
-          <div className="h-[40rem] relative w-screen bg-gray-100 flex flex-col justify-center items-center overflow-hidden">
-            <div className="w-screen absolute inset-0 h-screen">
-              <SparklesCore
-                id="tsparticlesfullpage"
-                background="transparent"
-                minSize={0.6}
-                maxSize={1.4}
-                particleDensity={20}
-                className="w-full"
-                particleColor="#fb923c"
-              />
+      {doctors[0] ? (
+        <>
+          <main className="w-screen h-lvh">
+            <div className="mx-auto h-screen">
+              <HeroParallax products={doctors} />
+              <div className="h-[40rem] relative w-screen bg-gray-100 flex flex-col justify-center items-center overflow-hidden">
+                <div className="w-screen absolute inset-0 h-screen">
+                  <SparklesCore
+                    id="tsparticlesfullpage"
+                    background="transparent"
+                    minSize={0.6}
+                    maxSize={1.4}
+                    particleDensity={20}
+                    className="w-full"
+                    particleColor="#fb923c"
+                  />
+                </div>
+                <div>
+                  <Image
+                    className="w-auto h-80"
+                    src="/logoBig.png"
+                    alt="logo"
+                    width={1080}
+                    height={1}
+                  />
+                </div>
+                <div className="flex flex-col sm:flex-row items-center gap-4 mt-6">
+                  <Link href="/ContactUs">
+                    <button className="px-4 py-2 opacity-80 border-orange-200 text-black rounded-md h-full hover:bg-orange-200 hover:text-black hover:transition duration-150 ease-linear">
+                      Contact Us
+                    </button>
+                  </Link>
+                  <Link href="/Signup">
+                    <button className="px-4 py-2 opacity-80 border-orange-200 text-black rounded-md h-full hover:bg-orange-200 hover:text-black hover:transition duration-150 ease-linear">Sign Up</button>
+                  </Link>
+                </div>
+              </div>
             </div>
-            <div>
-              <Image
-                className="w-auto h-80"
-                src="/logoBig.png"
-                alt="logo"
-                width={1080}
-                height={1}
-              />
-            </div>
-            <div className="flex flex-col sm:flex-row items-center gap-4 mt-6">
-              <Link href="/ContactUs">
-                <button className="px-4 py-2 opacity-80 border-orange-200 text-black rounded-md h-full hover:bg-orange-200 hover:text-black hover:transition duration-150 ease-linear">
-                  Contact Us
-                </button>
-              </Link>
-              <Link href="/Signup">
-                <button className="px-4 py-2 opacity-80 border-orange-200 text-black rounded-md h-full hover:bg-orange-200 hover:text-black hover:transition duration-150 ease-linear">Sign Up</button>
-              </Link>
-            </div>
-          </div>
+          </main>
+          <FooterLanding />
+        </>
+      ) : (
+        <div className="w-screen h-screen flex justify-center items-center">
+          <CircularProgress color="warning" size={'18rem'} />
         </div>
-      </main>
-      <FooterLanding />
-      </> : <div className="w-screen h-screen flex justify-center items-center"><CircularProgress color="warning" size={'18rem'} /></div>}
+      )}
     </>
   );
 }
