@@ -10,8 +10,10 @@ from database import engine, Base
 from routes import auth, user, doctor, patient, appointment, medical_record, reviews, notification
 import scheduler
 
-# Create database tables (Disabled for production - tables are created manually via Supabase SQL Editor)
-# Base.metadata.create_all(bind=engine)
+# Create database tables automatically only if using local SQLite (prevents Vercel Supabase crashes)
+from database import SQLALCHEMY_DATABASE_URL
+if "sqlite" in str(SQLALCHEMY_DATABASE_URL):
+    Base.metadata.create_all(bind=engine)
 
 # Initialize FastAPI app with customized Swagger UI parameters
 app = FastAPI(
