@@ -137,12 +137,13 @@ const adminPanel = () => {
       { headers }
     );
     if (!response.ok) {
-      console.log("Error: Request sent no data")
+      console.log("Error: Request sent no data", await response.text());
+      return;
     }
     const data: User[] = await response.json();
     const formattedData = data.map(user => ({
       ...user,
-      createdAt: user.createdAt.substring(0, 10)
+      createdAt: user.createdAt?.substring(0, 10) || "N/A"
     }));
     setUserList(formattedData);
 
@@ -179,7 +180,8 @@ const adminPanel = () => {
       { headers }
     );
     if (!response.ok) {
-      console.log("Error: Request sent no data")
+      console.log("Error: Request sent no data", await response.text());
+      return;
     }
     const data = await response.json();
     setPatientList(data);
@@ -243,12 +245,13 @@ const adminPanel = () => {
       { headers }
     );
     if (!response.ok) {
-      console.log("Error: Request sent no data")
+      console.log("Error: Request sent no data", await response.text());
+      return;
     }
     const data: Doctor[] = await response.json();
     const formattedData = data.map(doctor => ({
       ...doctor,
-      createdAt: doctor.createdAt.substring(0, 10)
+      createdAt: doctor.createdAt?.substring(0, 10) || "N/A"
     }));
     setDoctorList(formattedData);
   };
@@ -284,7 +287,8 @@ const adminPanel = () => {
       { headers }
     );
     if (!response.ok) {
-      console.log("Error: Request sent no data")
+      console.log("Error: Request sent no data", await response.text());
+      return;
     }
     const data = await response.json();
     setPatientListAdmin(data);
@@ -322,7 +326,8 @@ const adminPanel = () => {
       { headers }
     );
     if (!response.ok) {
-      console.log("Error: Request sent no data")
+      console.log("Error: Request sent no data", await response.text());
+      return;
     }
     const data = await response.json();
     setAppointmentList(data);
@@ -360,7 +365,8 @@ const adminPanel = () => {
       { headers }
     );
     if (!response.ok) {
-      console.log("Error: Request sent no data")
+      console.log("Error: Request sent no data", await response.text());
+      return;
     }
     const data = await response.json();
     setDoctorListStat(data);
