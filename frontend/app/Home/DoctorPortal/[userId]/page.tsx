@@ -45,7 +45,7 @@ const doctorPortal = () => {
   };
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+    ...(typeof window !== "undefined" && { Authorization: `Bearer ${localStorage.getItem("accessToken")}` })
   };
   async function fetchPatientList() {
     const response = await fetch(
