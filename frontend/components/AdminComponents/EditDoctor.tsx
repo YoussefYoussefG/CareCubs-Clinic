@@ -1,4 +1,5 @@
 import React, { useState, Fragment } from 'react'
+import { supabase } from '../../lib/supabaseClient'
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Transition } from '@headlessui/react';
@@ -39,6 +40,7 @@ const LabelInputContainer = ({
 };
 const EditDoctor = ({ openModal, setOpenModal, doctor, setDoctor }: { openModal: boolean, setOpenModal: React.Dispatch<React.SetStateAction<boolean>>, doctor: Doctor | undefined, setDoctor: React.Dispatch<React.SetStateAction<Doctor | undefined>> }) => {
     const [loading, setLoading] = useState(false)
+    const [uploading, setUploading] = useState(false)
     const [formData, setFormData] = useState({
         userName: doctor?.userName,
         email: doctor?.email,
@@ -81,6 +83,40 @@ const EditDoctor = ({ openModal, setOpenModal, doctor, setDoctor }: { openModal:
             [e.target.name]: e.target.value,
         });
     };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            setUploading(true)
+            if (!e.target.files || e.target.files.length === 0) {
+                throw new Error('You must select an image to upload.')
+            }
+
+            const file = e.target.files[0]
+            const fileExt = file.name.split('.').pop()
+            const fileName = `${Math.random()}.${fileExt}`
+            const filePath = `${fileName}`
+
+            let { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, file)
+
+            if (uploadError) {
+                throw uploadError
+            }
+
+            const { data } = supabase.storage.from('avatars').getPublicUrl(filePath)
+            
+            setFormData({
+                ...formData,
+                profilePic: data.publicUrl
+            })
+        } catch (error) {
+            alert('Error uploading avatar! Make sure you added Supabase URL and Anon Key to .env.local')
+            console.error(error)
+        } finally {
+            setUploading(false)
+        }
+    }
     return (
         <Transition appear show={openModal} as={Fragment}>
             <Transition.Child
@@ -131,6 +167,12 @@ const EditDoctor = ({ openModal, setOpenModal, doctor, setDoctor }: { openModal:
                                     <Input id="price" name="price" value={formData.price} onChange={handleChange} required placeholder="" type="number" />
                                 </LabelInputContainer>
                             </div>
+                            <LabelInputContainer className="mb-4">
+                                <Label htmlFor="profilePic">Profile Picture</Label>
+                                <Input id="profilePic" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+                                {uploading && <p className="text-sm text-orange-500">Uploading...</p>}
+                                {formData.profilePic && !uploading && <img src={formData.profilePic} alt="Avatar" className="w-16 h-16 rounded-full mt-2 object-cover" />}
+                            </LabelInputContainer>
                             <button
                                 className="bg-gradient-to-br relative group/btn from-black to-neutral-600 block w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset]"
                                 type="submit"

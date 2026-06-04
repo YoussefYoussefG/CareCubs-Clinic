@@ -56,6 +56,7 @@ async def create_doctor(
         lastName=user.lastName,
         price=user.price,
         role="doctor",
+        profilePicture=user.profilePic if user.profilePic else "https://i.imgur.com/9g7aq8u.png"
     )
 
     db.add(new_doctor)

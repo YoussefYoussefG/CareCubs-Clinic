@@ -107,6 +107,7 @@ class AddDoctor(BaseModel):
     firstName: str
     lastName: str
     price: int
+    profilePic: Optional[str] = None
 
 
 class UpdateDoctor(BaseModel):
