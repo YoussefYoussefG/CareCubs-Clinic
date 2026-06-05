@@ -1,8 +1,11 @@
+"use client";
+import React, { useState } from "react";
 import Link from "next/link";
 import LogoMark from "./LogoMark";
-import { FaPhoneAlt, FaEnvelope, FaClock } from "react-icons/fa";
+import { FaPhoneAlt, FaEnvelope, FaClock, FaBars, FaTimes } from "react-icons/fa";
 
 const NavbarLanding = () => {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     return (
         <header className="w-full flex flex-col z-50 sticky top-0 shadow-md font-sans">
             {/* Top Bar - Contact Info */}
@@ -41,9 +44,9 @@ const NavbarLanding = () => {
                     <a href="#contact" className="hover:text-teal-300 transition-colors">Contact</a>
                 </div>
 
-                {/* CTA Buttons */}
-                <div className="flex items-center gap-3">
-                    <Link href="/Login" className="hidden sm:block text-teal-100/70 font-medium hover:text-teal-300 transition-colors mr-2">
+                {/* CTA Buttons - Desktop Only */}
+                <div className="hidden md:flex items-center gap-3">
+                    <Link href="/Login" className="text-teal-100/70 font-medium hover:text-teal-300 transition-colors mr-2">
                         Login
                     </Link>
                     <Link href="/Signup">
@@ -52,7 +55,35 @@ const NavbarLanding = () => {
                         </button>
                     </Link>
                 </div>
+
+                {/* Mobile Menu Toggle */}
+                <div className="lg:hidden flex items-center">
+                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-teal-100/70 hover:text-teal-300 transition-colors">
+                        {isMobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+                    </button>
+                </div>
             </nav>
+
+            {/* Mobile Navigation Drawer */}
+            {isMobileMenuOpen && (
+                <div className="lg:hidden bg-slate-900 border-t border-slate-800 shadow-lg absolute top-full left-0 w-full z-40">
+                    <div className="flex flex-col px-6 py-4 space-y-4 text-teal-100/70 font-medium">
+                        <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-teal-300 transition-colors border-b border-slate-800 pb-2">Home</Link>
+                        <Link href="/#about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-teal-300 transition-colors border-b border-slate-800 pb-2">About Us</Link>
+                        <Link href="/#services" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-teal-300 transition-colors border-b border-slate-800 pb-2">Services</Link>
+                        <Link href="/#doctors" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-teal-300 transition-colors border-b border-slate-800 pb-2">Doctors</Link>
+                        <a href="#contact" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-teal-300 transition-colors border-b border-slate-800 pb-2">Contact</a>
+                        <div className="flex flex-col pt-2 space-y-3">
+                            <Link href="/Login" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-teal-300 transition-colors">Login</Link>
+                            <Link href="/Signup" onClick={() => setIsMobileMenuOpen(false)}>
+                                <button className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-medium py-2.5 rounded-lg shadow-md transition-all duration-200">
+                                    Book Appointment
+                                </button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            )}
         </header>
     );
 };

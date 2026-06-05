@@ -20,7 +20,7 @@ const DoctorsLanding = ({ doctors }: { doctors: Doctor[] }) => {
   if (!uniqueDoctors || uniqueDoctors.length === 0) return null;
 
   return (
-    <section id="doctors" className="py-24 bg-slate-50">
+    <section id="doctors" className="py-16 md:py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4">Meet Our Doctors</h2>
