@@ -41,8 +41,9 @@ export default function Home() {
       console.log("Error: Request sent no data")
     }
     const data = await response.json();
-    padArray(data);
-    setDoctors(data);
+    const filteredData = data.filter((doc: Doctor) => doc.thumbnail !== "https://i.imgur.com/9g7aq8u.png");
+    padArray(filteredData);
+    setDoctors(filteredData);
   }
 
   useEffect(() => {
