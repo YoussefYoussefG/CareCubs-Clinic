@@ -11,8 +11,8 @@ import Link from 'next/link';
 const BottomGradient = () => {
   return (
     <>
-      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-orange-500 to-transparent" />
-      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-orange-500 to-transparent" />
+      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-teal-500 to-transparent" />
+      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-teal-500 to-transparent" />
     </>
   );
 };
@@ -89,10 +89,10 @@ const login = () => {
     });
   };
   return (
-    <WavyBackground className="max-w-4xl h-screen mx-auto flex justify-self-center" backgroundFill="#f3f4f6" colors={["#ffedd5", "#fed7aa", "#fdba74", "#fb923c", "#f97316"]}>
+    <WavyBackground className="max-w-4xl h-screen mx-auto flex justify-self-center" backgroundFill="#f3f4f6" colors={["#CCFBF1", "#99F6E4", "#5EEAD4", "#2DD4BF", "#14B8A6"]}>
       <div className="max-w-md w-full min-w-[28rem] mx-auto my-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
         <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-          Welcome to <span className="text-orange-500">CareCubs Clinic</span>
+          Welcome to <span className="text-teal-600">CareCubs Clinic</span>
         </h2>
         <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
           Login to go to your portal

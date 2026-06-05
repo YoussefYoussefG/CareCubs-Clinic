@@ -9,7 +9,7 @@ const AboutUs = () => {
         {/* Intro Section */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-5xl font-bold text-slate-800 mb-6">
-            Welcome to <span className="text-orange-500">Care Cubs</span>
+            Welcome to <span className="text-teal-600">Care Cubs</span>
           </h2>
           <p className="text-lg text-slate-600 leading-relaxed">
             At Care Cubs Pediatrics, we believe every child deserves a healthy start. 
@@ -21,8 +21,8 @@ const AboutUs = () => {
 
         {/* Mission & Vision */}
         <div className="grid md:grid-cols-2 gap-10 mb-20">
-          <div className="bg-orange-50 rounded-2xl p-8 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <div className="w-14 h-14 bg-orange-500 text-white rounded-xl flex items-center justify-center mb-6 shadow-lg">
+          <div className="bg-teal-50 rounded-2xl p-8 border border-teal-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-emerald-500 text-white rounded-xl flex items-center justify-center mb-6 shadow-lg">
               <FaBullseye className="text-2xl" />
             </div>
             <h3 className="text-2xl font-bold text-slate-800 mb-4">Our Mission</h3>
@@ -54,7 +54,7 @@ const AboutUs = () => {
         
         <div className="grid md:grid-cols-3 gap-8">
           <div className="text-center p-6">
-            <div className="mx-auto w-16 h-16 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mb-4">
+            <div className="mx-auto w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mb-4">
               <FaHeartbeat className="text-3xl" />
             </div>
             <h4 className="text-xl font-bold text-slate-800 mb-3">Compassion</h4>
@@ -74,7 +74,7 @@ const AboutUs = () => {
           </div>
 
           <div className="text-center p-6">
-            <div className="mx-auto w-16 h-16 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mb-4">
+            <div className="mx-auto w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mb-4">
               <FaChild className="text-3xl" />
             </div>
             <h4 className="text-xl font-bold text-slate-800 mb-3">Family-Centered</h4>
