@@ -56,7 +56,8 @@ async def create_doctor(
         lastName=user.lastName,
         price=user.price,
         role="doctor",
-        profilePicture=user.profilePic if user.profilePic else "https://i.imgur.com/9g7aq8u.png"
+        profilePicture=user.profilePic if user.profilePic else "https://i.imgur.com/9g7aq8u.png",
+        bio=user.bio if user.bio else "Expert pediatrician dedicated to providing compassionate and comprehensive care for your child's health and well-being."
     )
 
     db.add(new_doctor)
@@ -98,6 +99,7 @@ async def get_doctor_by_id(
             "rating": doctor.rating,
             "numberOfRating": doctor.numberOfRating,
             "price": doctor.price,
+            "bio": doctor.bio,
         }
     }
 
@@ -127,6 +129,7 @@ async def doctor_list(db: Session = Depends(database.get_db)):
             "id": doctor.id,
             "numberOfReviews": num_reviews,
             "avarageRating": avg_rating,
+            "bio": doctor.bio,
         })
 
     return doctors_data
@@ -182,6 +185,7 @@ async def get_own_doctor_profile(
         "rating": db_doctor.rating,
         "numberOfRating": db_doctor.numberOfRating,
         "price": db_doctor.price,
+        "bio": db_doctor.bio,
     }
 
 
@@ -211,6 +215,7 @@ async def get_doctor_by_admin(
         "rating": doctor.rating,
         "numberOfRating": doctor.numberOfRating,
         "price": doctor.price,
+        "bio": doctor.bio,
     }
 
 
@@ -286,6 +291,7 @@ async def update_doctor(
         "lastName": doctor.lastName,
         "profilePicture": doctor.profilePic,
         "price": doctor.price,
+        "bio": doctor.bio,
     })
     db.commit()
 
@@ -302,6 +308,7 @@ async def update_doctor(
         "rating": updated.rating,
         "numberOfRating": updated.numberOfRating,
         "price": updated.price,
+        "bio": updated.bio,
     }
 
 
@@ -341,6 +348,7 @@ async def update_doctor_by_admin(
         "lastName": doctor.lastName,
         "profilePicture": doctor.profilePic,
         "price": doctor.price,
+        "bio": doctor.bio,
     })
     db.commit()
 
@@ -354,6 +362,7 @@ async def update_doctor_by_admin(
         "createdAt": str(updated.createdAt),
         "profilePicture": updated.profilePicture,
         "price": updated.price,
+        "bio": updated.bio,
     }
 
 

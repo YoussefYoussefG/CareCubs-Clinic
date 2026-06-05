@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react'
 import SideAppointmentsDrPortal from '@/components/sideAppointmentsDrPortal';
 import DoctorAppointmentTableDrPortal from '@/components/appointmentTableDrPortal';
 import LogoutButton from '@/components/LogoutButton';
+import EditDoctorBio from '@/components/EditDoctorBio';
 
 interface Patient {
   id: number;
@@ -103,6 +104,16 @@ const doctorPortal = () => {
         <DoctorAppointmentTableDrPortal />   </div>
     </>
   ));
+  const Skeleton5 = React.memo(() => (
+    <>
+      <div className='flex items-start font-bold border border-transparent mb-2'>
+        Public Profile Details
+      </div>
+      <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl font-bold border border-transparent ">
+        <EditDoctorBio />
+      </div>
+    </>
+  ));
   const items = [
     {
       description: 'You can edit the patients medical record.',
@@ -123,6 +134,11 @@ const doctorPortal = () => {
       description:
         "Red slots are appointments already booked while green are available slots",
       header: <Skeleton4 />,
+      className: "md:col-span-2 border border-neutral-200 h-full",
+    },
+    {
+      description: "Manage how you appear to patients on the public landing page.",
+      header: <Skeleton5 />,
       className: "md:col-span-2 border border-neutral-200 h-full",
     },
   ];

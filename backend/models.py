@@ -38,6 +38,7 @@ class Doctor(Base):
     price = Column(Integer, nullable=False)
     profilePicture = Column(String)
     role = Column(String, nullable=False)
+    bio = Column(String, default="Expert pediatrician dedicated to providing compassionate and comprehensive care for your child's health and well-being.")
 
     appointments = relationship("Appointment", back_populates="doctor")
     reviews = relationship("Review", back_populates="doctor")

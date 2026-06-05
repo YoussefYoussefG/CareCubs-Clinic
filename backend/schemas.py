@@ -85,6 +85,7 @@ class Doctor(BaseModel):
     price: int
     profilePicture: Optional[str] = None
     role: str
+    bio: Optional[str] = None
 
 
 class DoctorList(BaseModel):
@@ -94,6 +95,7 @@ class DoctorList(BaseModel):
     id: Optional[int] = None
     numberOfReviews: Optional[int] = None
     avarageRating: Optional[float] = None
+    bio: Optional[str] = None
 
 
 class DoctorLoginResponse(BaseModel):
@@ -108,6 +110,7 @@ class AddDoctor(BaseModel):
     lastName: str
     price: int
     profilePic: Optional[str] = None
+    bio: Optional[str] = None
 
 
 class UpdateDoctor(BaseModel):
@@ -118,6 +121,7 @@ class UpdateDoctor(BaseModel):
     lastName: str
     profilePic: str
     price: int
+    bio: Optional[str] = None
 
 
 class UpdateDoctorAdmin(UpdateDoctor):

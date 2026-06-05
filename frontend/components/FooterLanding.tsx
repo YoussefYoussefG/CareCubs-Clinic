@@ -4,7 +4,7 @@ import LogoMark from "./LogoMark";
 
 const FooterLanding = () => {
     return (
-        <footer className="relative bg-slate-900 text-gray-300 overflow-hidden font-sans">
+        <footer id="contact" className="relative bg-slate-900 text-gray-300 overflow-hidden font-sans">
             {/* Animated Heartbeat Top Border */}
             <div className="absolute top-0 left-0 w-full h-1">
                 <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1440 4" fill="none" xmlns="http://www.w3.org/2000/svg">

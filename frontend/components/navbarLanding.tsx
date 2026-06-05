@@ -38,7 +38,7 @@ const NavbarLanding = () => {
                     <Link href="/#about" className="hover:text-teal-300 transition-colors">About Us</Link>
                     <Link href="/#services" className="hover:text-teal-300 transition-colors">Services</Link>
                     <Link href="/#doctors" className="hover:text-teal-300 transition-colors">Doctors</Link>
-                    <Link href="/ContactUs" className="hover:text-teal-300 transition-colors">Contact</Link>
+                    <a href="#contact" className="hover:text-teal-300 transition-colors">Contact</a>
                 </div>
 
                 {/* CTA Buttons */}

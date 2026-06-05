@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import NavbarLanding from "@/components/navbarLanding";
 import FooterLanding from "@/components/FooterLanding";
 import AboutUs from "@/components/AboutUs";
+import ServicesLanding from "@/components/ServicesLanding";
+import DoctorsLanding from "@/components/DoctorsLanding";
 
 interface Doctor {
   title: string;
@@ -55,7 +57,8 @@ export default function Home() {
             <div className="mx-auto">
               <HeroParallax products={doctors} />
               <AboutUs />
-
+              <ServicesLanding />
+              <DoctorsLanding doctors={doctors} />
             </div>
           </main>
           <FooterLanding />
