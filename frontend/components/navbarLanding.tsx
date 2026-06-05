@@ -24,26 +24,26 @@ const NavbarLanding = () => {
             </div>
 
             {/* Main Nav - Links & CTA */}
-            <nav className="bg-white w-full h-20 sm:h-24 flex justify-between items-center px-6 md:px-12 lg:px-24">
+            <nav className="bg-slate-900 w-full h-20 sm:h-24 flex justify-between items-center px-6 md:px-12 lg:px-24">
                 {/* Logo */}
                 <div className="flex items-center h-full py-2">
                     <Link href="/" className="h-full flex items-center hover:opacity-90 transition-opacity">
-                        <LogoMark size="md" variant="color" showText />
+                        <LogoMark size="md" variant="white" showText />
                     </Link>
                 </div>
 
                 {/* Nav Links */}
-                <div className="hidden lg:flex items-center gap-8 text-slate-700 font-medium">
-                    <Link href="/" className="hover:text-teal-600 transition-colors">Home</Link>
-                    <Link href="/#about" className="hover:text-teal-600 transition-colors">About Us</Link>
-                    <Link href="/#services" className="hover:text-teal-600 transition-colors">Services</Link>
-                    <Link href="/#doctors" className="hover:text-teal-600 transition-colors">Doctors</Link>
-                    <Link href="/ContactUs" className="hover:text-teal-600 transition-colors">Contact</Link>
+                <div className="hidden lg:flex items-center gap-8 text-teal-100/70 font-medium">
+                    <Link href="/" className="hover:text-teal-300 transition-colors">Home</Link>
+                    <Link href="/#about" className="hover:text-teal-300 transition-colors">About Us</Link>
+                    <Link href="/#services" className="hover:text-teal-300 transition-colors">Services</Link>
+                    <Link href="/#doctors" className="hover:text-teal-300 transition-colors">Doctors</Link>
+                    <Link href="/ContactUs" className="hover:text-teal-300 transition-colors">Contact</Link>
                 </div>
 
                 {/* CTA Buttons */}
                 <div className="flex items-center gap-3">
-                    <Link href="/Login" className="hidden sm:block text-slate-700 font-medium hover:text-teal-600 transition-colors mr-2">
+                    <Link href="/Login" className="hidden sm:block text-teal-100/70 font-medium hover:text-teal-300 transition-colors mr-2">
                         Login
                     </Link>
                     <Link href="/Signup">
