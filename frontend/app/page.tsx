@@ -53,12 +53,12 @@ export default function Home() {
       <NavbarLanding />
       {doctors[0] ? (
         <>
-          <main className="w-screen h-lvh">
-            <div className="mx-auto h-screen">
+          <main className="w-full min-h-screen">
+            <div className="mx-auto">
               <HeroParallax products={doctors} />
               <AboutUs />
-              <div className="h-[40rem] relative w-screen bg-gradient-to-br from-slate-50 to-teal-50 flex flex-col justify-center items-center overflow-hidden">
-                <div className="w-screen absolute inset-0 h-screen">
+              <div className="h-[40rem] relative w-full bg-gradient-to-br from-slate-50 to-teal-50 flex flex-col justify-center items-center overflow-hidden">
+                <div className="w-full absolute inset-0 h-full">
                   <SparklesCore
                     id="tsparticlesfullpage"
                     background="transparent"
