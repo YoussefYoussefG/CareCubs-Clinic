@@ -4,6 +4,7 @@ import ChangePatientInfo from '@/components/changePatientInfo';
 import Navbar from '@/components/navbar';
 import { BentoGrid, BentoGridItem } from '@/components/ui/bento-grid';
 import { useRouter } from 'next/navigation';
+import AvatarFallback from '@/components/AvatarFallback';
 import React, { useEffect, useState } from 'react';
 import MedicalRecord from "@/components/medicalRecord"
 import DoctorSelector from '@/components/DoctorSelector';
@@ -141,7 +142,15 @@ const patientPortal = () => {
       </div>
       <div className="flex-col w-full h-full min-h-[6rem] rounded-xl bg-dot-black/[0.2] font-bold border border-transparent ">
         <div className='flex flex-col items-center justify-center space-y-4'>
-          <Image className="w-48 h-48 rounded-full object-cover" src={user?.profilePicture ?? "/default.jpg"} alt='' width={1080} height={1080} />
+          <AvatarFallback
+            className="w-48 h-48 rounded-full object-cover"
+            src={user?.profilePicture}
+            alt="Profile Picture"
+            name={`${user?.firstName} ${user?.lastName}`}
+            width={1080}
+            height={1080}
+            iconSize="text-6xl"
+          />
           <div className='text-lg font-bold mb-6'>Mr.{formatName(user?.firstName ?? "") + " " + formatName(user?.lastName ?? "")}</div>
         </div>
         <ChangePatientInfo currentPatient={currentPatient} />

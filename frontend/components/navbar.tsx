@@ -1,8 +1,8 @@
 "use client"
 import styles from "../styles/navbar.module.css";
 import Link from "next/link";
-import Image from "next/image";
 import LogoMark from "./LogoMark";
+import AvatarFallback from "./AvatarFallback";
 import { HoveredLink, Menu, MenuItem } from "@/components/ui/navbar-menu";
 import { cn } from "@/utils/cn";
 import React, { useEffect, useState } from "react";
@@ -119,12 +119,12 @@ const Navbar = ({
             <div className="text-white mx-4">
               {user?.firstName} {user?.lastName}
             </div>
-            <Image
+            <AvatarFallback
               className="lg:w-20 lg:h-20 md:w-16 md:h-16 w-12 h-12 md:p-1 lg:p-2 rounded-full object-cover"
-              src={user?.profilePicture ? user.profilePicture : "/default.jpg"}
+              src={user?.profilePicture}
               alt="Profile Pic"
-              width={1080}
-              height={1080}
+              name={`${user?.firstName} ${user?.lastName}`}
+              iconSize="text-3xl"
             />
           </Link>
         </div>

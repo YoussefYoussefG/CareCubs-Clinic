@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import Image from "next/image";
+import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
+import AvatarFallback from './AvatarFallback';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { formatName } from '@/utils/formatFuncs';
 import { CircularProgress } from '@mui/material';
@@ -92,7 +93,15 @@ const DoctorReviews = () => {
             {doctor.profilePicture ? <div className='flex flex-col justify-start items-center'>
                 <div className='flex flex-col items-center justify-center'>
                     <div className='flex items-center justify-center'>
-                        <Image className='w-48 h-48 object-cover rounded-full mb-2' alt="/default.jpg" src={doctor.profilePicture ? doctor.profilePicture : "/default.jpg"} width={1080} height={1080} />
+                        <AvatarFallback
+                            className='w-48 h-48 object-cover rounded-full mb-2'
+                            alt={`Dr. ${doctor.firstName || ""} ${doctor.lastName || ""}`}
+                            src={doctor.profilePicture}
+                            name={`Dr. ${doctor.firstName || ""} ${doctor.lastName || ""}`}
+                            width={1080}
+                            height={1080}
+                            iconSize='text-6xl'
+                        />
                     </div>
                     <div className='flex space-x-2'>
                         <p className='text-lg'>{`Dr. ${formatName(doctor.firstName ? doctor.firstName : "") + " " + formatName(doctor.lastName ? doctor.lastName : "")}`}</p>
